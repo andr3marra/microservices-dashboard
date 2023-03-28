@@ -4,12 +4,13 @@ import {
     Position
 } from "reactflow";
 
-import { HealthCheckResponse, HealthStatus, Api } from "./data";
+import {Status, ServiceState } from "./data";
 
 
 const healthyNodeStyle =
 {
     animated: false,
+    style: { stroke: "#27ae60" },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
 };
@@ -17,9 +18,9 @@ const healthyNodeStyle =
 const degradedNodeStyle =
 {
     animated: true,
-    label: HealthStatus[HealthStatus.Degraded],
-    labelStyle: { fill: "red", fontWeight: 700 },
-    style: { stroke: "orange" },
+    label: Status.Degraded,
+    labelStyle: { fill: "#e67e22", fontWeight: 700 },
+    style: { stroke: "#e67e22" },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
 };
@@ -27,141 +28,133 @@ const degradedNodeStyle =
 const unhealtyNodeStyle =
 {
     animated: true,
-    label: HealthStatus[HealthStatus.Degraded],
-    labelStyle: { fill: "red", fontWeight: 700 },
-    style: { stroke: "red" },
+    label: Status.Unhealthy,
+    labelStyle: { fill: "#d12121", fontWeight: 700 },
+    style: { stroke: "#d12121" },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
 };
 
-const results1 = new Map<string, Api>();
+function getNodeStyle(value: Status) {
+    switch (value) {
+        case Status.Healthy:
+            return healthyNodeStyle;
+        case Status.Degraded:
+            return degradedNodeStyle;
+        case Status.Unhealthy:
+            return unhealtyNodeStyle;
+    }
+}
 
-results1.set("Service Bolsa", {
-    status: HealthStatus.Healthy,
-    description: "I am one healthy microservice API",
-    data: {}
-});
+const data = [
+    {
+        Id: "aac6b4e4-3d11-4e35-b778-05a65e6d7d02",
+        ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        Name: "PostGreSQL",
+        Url: null,
+        Status: Status.Degraded,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "2a7052b0-f3f0-4be5-9c7b-b2be529ac1b0",
+        ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        Name: "Service Goias",
+        Url: null,
+        Status: Status.Healthy,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        Name: "Service Amazonas",
+        Url: "www.amazonas.com/health",
+        Status: Status.Degraded,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "f5599ae7-b455-4fce-92d6-628f4ed956a5",
+        ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        Name: "Service Sao Luis",
+        Url:null,
+        Status: Status.Unhealthy,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "14461a0e-c1de-476c-b475-d2e511d1416e",
+        ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        Name: "Service Curitiba",
+        Url: null,
+        Status: Status.Healthy,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "cdec9a40-f56b-4345-a3b1-f4a6c7451cdc",
+        ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        Name: "Service Campo Grande",
+        Url: "www.campogrande.com/health",
+        Status: Status.Healthy,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        Name: "Service Fortaleza",
+        Url: "www.fortaleza.com/health",
+        Status: Status.Unhealthy,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
+    {
+        Id: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        ParentId: null,
+        Name: "Gateway São Paulo",
+        Url: "www.saopaulo.com/health",
+        Status: Status.Degraded,
+        Description: "",
+        Metadata: null
+    } as ServiceState,
 
-results1.set("Service Boleta", {
-    status: HealthStatus.Degraded,
-    description: "Not feeling so well, boss!",
-    data: {}
-});
-
-const results2 = new Map<string, Api>();
-
-results2.set("SQL Server", {
-    status: HealthStatus.Healthy,
-    description: "I am one healthy microservice API",
-    data: {}
-});
-
-results2.set("Market Data Info", {
-    status: HealthStatus.Degraded,
-    description: "Not feeling so well, boss!",
-    data: {}
-});
-
-const results3 = new Map<string, Api>();
-results3.set("PostgreSQL", {
-    status: HealthStatus.Healthy,
-    description: "I am one healthy microservice API",
-    data: {}
-});
-
-results3.set("Market Data Information", {
-    status: HealthStatus.Degraded,
-    description: "Not feeling so well, boss!",
-    data: {}
-});
-
-const apiresponses: Map<string, HealthCheckResponse> = new Map<
-    string,
-    HealthCheckResponse
->();
-
-apiresponses.set("Websocket Gateway", {
-    status: HealthStatus.Degraded,
-    results: results1
-});
-
-apiresponses.set("Service Portfolio Boleta", {
-    status: HealthStatus.Degraded,
-    results: results2
-});
-
-apiresponses.set("Service Portfolio Bolsa", {
-    status: HealthStatus.Degraded,
-    results: results3
-});
+] as ServiceState[];
 
 const initialNodes: Node[] = [];
 
-const initialEdges: Edge[] = [
-    // { id: "e1-2", source: "0", target: "1", animated: true }
-];
-
+const initialEdges: Edge[] = [];
 
 export function getData(): [Node[], Edge[]] {
-    var itemCount = 0;
-    apiresponses.forEach((responses: HealthCheckResponse, bigNodeName: string) => {
-        let bigNode = {
-            id: itemCount.toString(),
-            type: "default",//"input",
-            data: { label: bigNodeName },
+
+    data.forEach((serviceState: ServiceState)=>{
+        let node = {
+            id: serviceState.Id,
+            // type: serviceState.ParentId == null ? "input" : "default",
+            type: "service",
+            data: { label: serviceState.Name, status: serviceState.Status },
             position: { x: 0, y: 0 },
             sourcePosition: Position.Right,
             targetPosition: Position.Left
         } as Node;
-        console.log(`Inserted key: ${itemCount}`);
-        initialNodes.push(bigNode);
-        itemCount++;
 
-        responses.results.forEach((value: Api, smallNodeName: string) => {
-            let smallNode = {
-                id: itemCount.toString(),
-                type: "default", //"output",
-                data: { label: smallNodeName },
-                position: { x: 0, y: 0 },
-                ...degradedNodeStyle
-            } as Node;
+        console.log("Status", serviceState.Status)
 
-            let edge = null;
+        initialNodes.push(node);
 
-            switch (value.status) {
-                case HealthStatus.Healthy:
-                    edge = {
-                        id: `${bigNode.id} - ${smallNode.id}`,
-                        source: bigNode.id,
-                        target: smallNode.id,
-                        ...healthyNodeStyle
-                    } as Edge;
-                    break
-                case HealthStatus.Degraded:
-                    edge = {
-                        id: `${bigNode.id} - ${smallNode.id}`,
-                        source: bigNode.id,
-                        target: smallNode.id,
-                        ...degradedNodeStyle
-                    } as Edge;
-                    break;
-                case HealthStatus.Unhealthy:
-                    edge = {
-                        id: `${bigNode.id} - ${smallNode.id}`,
-                        source: bigNode.id,
-                        target: smallNode.id,
-                        ...unhealtyNodeStyle
-                    } as Edge;
-                    break;
-            }
+        if(serviceState.ParentId == null){
+            return;
+        }
+        let edge = {
+            id: `${serviceState.ParentId} - ${serviceState.Id}`,
+            source: serviceState.ParentId,
+            target: serviceState.Id,
+            ...getNodeStyle(serviceState.Status)
+        } as Edge;
 
-            initialEdges.push(edge);
-
-            console.log(`Inserted key: ${itemCount}`);
-            initialNodes.push(smallNode);
-            itemCount++;
-        });
-    })
+        initialEdges.push(edge);
+    });
 
     return [initialNodes, initialEdges];
 };

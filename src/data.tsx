@@ -1,22 +1,15 @@
-export interface HealthCheckResponse {
-  status: HealthStatus;
-  results: Map<string, Api>;
+export enum Status {
+  Healthy = "Healthy",
+  Degraded = "Degraded",
+  Unhealthy = "Unhealthy"
 }
 
-export interface Results {
-  item: Api[];
-}
-
-export interface Api {
-  status: HealthStatus;
-  description: string;
-  data: Data;
-}
-
-export interface Data {}
-
-export enum HealthStatus {
-  Healthy = 1,
-  Degraded,
-  Unhealthy
+export interface ServiceState{
+  Id : string,
+  ParentId : string|null,
+  Name : string,
+  Url : string|null,
+  Status : Status,
+  Description: string|null,
+  Metadata? : string[]|null
 }

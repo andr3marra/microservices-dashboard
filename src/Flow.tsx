@@ -13,14 +13,14 @@ import ReactFlow, {
 import {getData} from "./initialNodes"
 
 import "reactflow/dist/style.css";
-import CustomNode from "./CustomNode";
+import ServiceNode from "./components/ServiceNode";
 
 import ELK from 'elkjs/lib/elk.bundled.js'
 
 const elk = new ELK()
 
 const nodeTypes = {
-  custom: CustomNode
+  service: ServiceNode
 };
 
 const [initialNodes, initialEdges] = getData();
@@ -29,7 +29,7 @@ const elkLayout = () => {
   const nodesForElk = initialNodes.map((node: Node) => {
     return {
       id: node.id,
-      width: 200,
+      width: 220,
       height: 100
     };
   });

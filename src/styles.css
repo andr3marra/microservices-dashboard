@@ -10,8 +10,34 @@ body,
   text-align: center;
 }
 
-.react-flow__node-custom {
+.react-flow__node-service {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 180px;
+  min-height: 45px;
+  border: .7px solid #999999;
+  background: white;
+  border-radius: 5px;
   padding: 10px;
-  background-color: #556677;
-  color: white;
+  font-size: .8rem
+}
+
+.status {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.Healthy {
+  background:#27ae60 
+}
+
+.Degraded {
+  background: #e67e22
+}
+
+.Unhealthy {
+  background:#d12121
 }
