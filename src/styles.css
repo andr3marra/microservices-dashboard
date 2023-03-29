@@ -20,7 +20,14 @@ body,
   background: white;
   border-radius: 5px;
   padding: 10px;
-  font-size: .8rem
+  font-size: .8rem;
+}
+
+.react-flow__node-service .content {
+  max-width: 140px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .status {
@@ -28,6 +35,7 @@ body,
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  margin-left: 5px
 }
 
 .Healthy {
