@@ -1,15 +1,15 @@
-export enum Status {
-  Healthy = "Healthy",
-  Degraded = "Degraded",
-  Unhealthy = "Unhealthy"
+export enum HealthStatus {
+  Unhealthy,
+  Degraded,
+  Healthy
 }
 
 export interface ServiceState{
-  Id : string,
-  ParentId : string|null,
-  Name : string,
-  Url : string|null,
-  Status : Status,
-  Description: string|null,
-  Metadata? : string[]|null
+  id : string,
+  parentId : string|null,
+  name : string,
+  url : string|null,
+  healthStatus : HealthStatus,
+  description: string|null,
+  metadata? : string[]|null
 }

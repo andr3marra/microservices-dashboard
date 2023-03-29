@@ -9,13 +9,15 @@ import ReactFlow, {
   useEdgesState,
   Position
 } from "reactflow";
+import ELK from 'elkjs/lib/elk.bundled.js'
 
-import {getData} from "./initialNodes"
+
+import { usePrevious } from "./utils/hooks/usePrevious";
+
+import { getData, pollData } from "./initialNodes"
 
 import "reactflow/dist/style.css";
 import ServiceNode from "./components/ServiceNode";
-
-import ELK from 'elkjs/lib/elk.bundled.js'
 
 const elk = new ELK()
 
@@ -23,63 +25,92 @@ const nodeTypes = {
   service: ServiceNode
 };
 
-const [initialNodes, initialEdges] = getData();
-
-const elkLayout = () => {
-  const nodesForElk = initialNodes.map((node: Node) => {
-    return {
-      id: node.id,
-      width: 220,
-      height: 100
-    };
-  });
-  const graph = {
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      "elk.direction": "RIGHT",
-      "nodePlacement.strategy": "SIMPLE"
-    }, children: nodesForElk,
-    edges: initialEdges as any
-  };
-  return elk.layout(graph as any);
-};
+let initialNodes: Node[]; let initialEdges: Edge[];
 
 const BasicFlow = () => {
-  const nodesForFlow = (graph: any) => {
-    return [
-      ...graph.children.map((node: any) => {
-        return {
-          ...initialNodes.find((n) => n.id === node.id),
-          position: { x: node.x, y: node.y }
-        };
-      })
-    ];
-  };
-  const edgesForFlow = (graph: any) => {
-    return graph.edges;
-  };
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const previousValues = usePrevious({ nodes, edges })
 
+  // Fetch the api response
   useEffect(() => {
+    const fetchData = async () => {
+      const data = await pollData();
+
+      const [nodes, edges] = getData()
+
+      console.log("formatted nodes", nodes)
+      console.log("formatted edges", edges)
+      setNodes(nodes)
+      setEdges(edges)
+    }
+
+    // call the function
+    fetchData()
+      // make sure to catch any error
+      .catch(console.error);
+
+  }, []);
+
+  // Called after each node or edge changes to generate the diagram layout automatically using Elkjs
+  useEffect(() => {
+
+    if (!nodes) return
+
+    if (previousValues?.edges === edges || previousValues?.nodes === nodes) return
+
+    const elkLayout = () => {
+      const nodesForElk = nodes.map((node: Node) => {
+        return {
+          id: node.id,
+          width: 220,
+          height: 100
+        };
+      });
+      const graph = {
+        id: "root",
+        layoutOptions: {
+          "elk.algorithm": "layered",
+          "elk.direction": "RIGHT",
+          "nodePlacement.strategy": "SIMPLE"
+        }, children: nodesForElk,
+        edges: edges as any
+      };
+      return elk.layout(graph as any);
+    };
+
+    const nodesForFlow = (graph: any) => {
+      return [
+        ...graph.children.map((node: any) => {
+          return {
+            ...nodes.find((n) => n.id === node.id),
+            position: { x: node.x, y: node.y }
+          };
+        })
+      ];
+    };
+
+    const edgesForFlow = (graph: any) => {
+      return graph.edges;
+    };
+
     elkLayout().then((graph) => {
-      console.log(graph);
       setNodes(nodesForFlow(graph));
       setEdges(edgesForFlow(graph));
     });
-  }, []);
+
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
     (params: Edge | Connection) => setEdges((els) => addEdge(params, els)),
     [setEdges]
   );
 
-  if (nodes === null) {
+  if (!nodes) {
     return <></>;
   }
-  
+
   return (
     <ReactFlow
       nodes={nodes}
