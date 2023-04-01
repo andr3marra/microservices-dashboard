@@ -138,6 +138,7 @@ function getUsers(): Promise<ServiceState[]> {
 
 export async function pollData() {
     data = await getUsers()
+    console.log(data);
 }
 
 export function getData(): [Node[], Edge[]] {

@@ -4,12 +4,12 @@ export enum HealthStatus {
   Healthy
 }
 
-export interface ServiceState{
+export interface ServiceState {
   id : string,
   parentId : string|null,
   name : string,
   url : string|null,
   healthStatus : HealthStatus,
-  description: string|null,
-  metadata? : string[]|null
+  description?: string|null,
+  tags? : string[]|null
 }
