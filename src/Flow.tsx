@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Node,
   addEdge,
@@ -7,10 +7,11 @@ import ReactFlow, {
   Connection,
   useNodesState,
   useEdgesState,
-  Position
+  Controls,
+  MiniMap,
+  BackgroundVariant
 } from "reactflow";
 import ELK from 'elkjs/lib/elk.bundled.js'
-
 
 import { usePrevious } from "./utils/hooks/usePrevious";
 
@@ -32,6 +33,8 @@ const BasicFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const previousValues = usePrevious({ nodes, edges })
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isOpen, setIsOpen] = useState(false);
 
   // Fetch the api response
   useEffect(() => {
@@ -40,8 +43,8 @@ const BasicFlow = () => {
 
       const [nodes, edges] = getData()
 
-      console.log("formatted nodes", nodes)
-      console.log("formatted edges", edges)
+      // console.log("formatted nodes", nodes)
+      // console.log("formatted edges", edges)
       setNodes(nodes)
       setEdges(edges)
     }
@@ -111,6 +114,31 @@ const BasicFlow = () => {
     return <></>;
   }
 
+  const onMouseEnter = (event: React.MouseEvent, node: Node) => {
+    console.log("onMouseEnter");
+    event.preventDefault();
+    setPosition({ x: event.clientX, y: event.clientY })
+    setIsOpen(true);
+
+    console.log(node);
+
+
+    // nodes.forEach(function (node) {
+    //   if(node.data.tags != null && (node.data.tags as string[]).includes("City")){
+    //     node.hidden = true;
+    //     console.log("setting to hidden")
+    //   }
+    // });
+    // setNodes(nodes)
+    // setEdges(edges)
+  };
+
+  const onMouseLeave = (event: React.MouseEvent, node: Node)=> {
+    console.log("onMouseLeave");
+    event.preventDefault();
+    setIsOpen(false);
+  };
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -119,10 +147,50 @@ const BasicFlow = () => {
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
       nodeTypes={nodeTypes}
+      // fitView = {true}  // NOT WORKING
+      onNodeContextMenu = {(event: React.MouseEvent, node: Node) => {}}
+      onNodeMouseEnter = {onMouseEnter}
+      onNodeMouseLeave = {onMouseLeave}
     >
-      <Background />
+      <Controls />
+      <MiniMap />
+      <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+
+
+
+      {isOpen && (
+        <div style={{ overflow: 'hidden', position: 'fixed', top: 0, width: '100%' }}>
+          <a href="#home">Home</a>
+          <a href="#news">News</a>
+          <a href="#contact">Contact</a>
+        </div>
+      )
+      }
+
+      <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}>
+        <div>
+          <label htmlFor="ishidden">
+            isOpen
+            <input
+              id="ishidden"
+              type="checkbox"
+              onChange={() => {console.log("testeeee")}}
+              className="react-flow__ishidden"
+            />
+          </label>
+        </div>
+      </div>
+
     </ReactFlow>
+
+    
   );
 };
+    //https://reactflow.dev/docs/examples/nodes/dynamic-grouping/
 
 export default BasicFlow;
+
+
+// TODO: Set node visibility based on tags using a toolbar
+// TODO: Create colapse function for nodes
+// TODO: Implement on backend node grouping 

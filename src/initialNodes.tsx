@@ -7,42 +7,36 @@ import {
 import { HealthStatus, ServiceState } from "./data";
 
 
-const healthyNodeStyle =
+const healthyEdgeStyle =
 {
     animated: false,
-    style: { stroke: "#27ae60" },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
+    style: { stroke: "#27ae60" }
 };
 
-const degradedNodeStyle =
+const degradedEdgeStyle =
 {
     animated: true,
     label: HealthStatus[HealthStatus.Degraded],
     labelStyle: { fill: "#e67e22", fontWeight: 700 },
-    style: { stroke: "#e67e22" },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
+    style: { stroke: "#e67e22" }
 };
 
-const unhealtyNodeStyle =
+const unhealtyEdgeStyle =
 {
     animated: true,
     label: HealthStatus[HealthStatus.Unhealthy],
     labelStyle: { fill: "#d12121", fontWeight: 700 },
-    style: { stroke: "#d12121" },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
+    style: { stroke: "#d12121" }
 };
 
-function getNodeStyle(value: HealthStatus) {
+function getEdgeStyle(value: HealthStatus) {
     switch (value) {
         case HealthStatus.Healthy:
-            return healthyNodeStyle;
+            return healthyEdgeStyle;
         case HealthStatus.Degraded:
-            return degradedNodeStyle;
+            return degradedEdgeStyle;
         case HealthStatus.Unhealthy:
-            return unhealtyNodeStyle;
+            return unhealtyEdgeStyle;
     }
 }
 let data: ServiceState[];
@@ -138,7 +132,6 @@ function getUsers(): Promise<ServiceState[]> {
 
 export async function pollData() {
     data = await getUsers()
-    console.log(data);
 }
 
 export function getData(): [Node[], Edge[]] {
@@ -146,14 +139,28 @@ export function getData(): [Node[], Edge[]] {
     const initialEdges: Edge[] = [];
 
     data.forEach((serviceState: ServiceState) => {
+        // if (serviceState.parentId == null) {
+        //     let groupNode = {
+        //         id: serviceState.id + "group",
+        //         type: "group",
+        //         data: { label: serviceState.name, status: serviceState.healthStatus },
+        //         position: { x: 0, y: 0 },
+        //         sourcePosition: Position.Right,
+        //         targetPosition: Position.Left
+        //     } as Node;
+    
+        //     initialNodes.push(groupNode);
+        // }
+
         let node = {
             id: serviceState.id,
-            // type: serviceState.ParentId == null ? "input" : "default",
-            type: "service",
-            data: { label: serviceState.name, status: serviceState.healthStatus },
+            data: { label: serviceState.name, status: serviceState.healthStatus, tags: serviceState.tags },
             position: { x: 0, y: 0 },
             sourcePosition: Position.Right,
-            targetPosition: Position.Left
+            targetPosition: Position.Left,
+            type : serviceState.parentId == null ? "input" : "output",  // COMMENT THIS TO GET DEFAULT NODES
+            // extent: 'parent',
+            // parentNode: serviceState.parentId == null ? "" : serviceState.parentId + "group"//initialNodes.find((node) => {node.id == serviceState.parentId})[0].
         } as Node;
 
         initialNodes.push(node);
@@ -165,7 +172,7 @@ export function getData(): [Node[], Edge[]] {
             id: `${serviceState.parentId} - ${serviceState.id}`,
             source: serviceState.parentId,
             target: serviceState.id,
-            ...getNodeStyle(serviceState.healthStatus)
+            ...getEdgeStyle(serviceState.healthStatus)
         } as Edge;
 
         initialEdges.push(edge);
