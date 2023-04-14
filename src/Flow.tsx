@@ -15,7 +15,7 @@ import ELK from 'elkjs/lib/elk.bundled.js'
 
 import { usePrevious } from "./utils/hooks/usePrevious";
 
-import { getData, pollData } from "./initialNodes"
+import { getNodes, getEdges } from "./initialNodes"
 
 import "reactflow/dist/style.css";
 import ServiceNode from "./components/ServiceNode";
@@ -39,9 +39,8 @@ const BasicFlow = () => {
   // Fetch the api response
   useEffect(() => {
     const fetchData = async () => {
-      const data = await pollData();
-
-      const [nodes, edges] = getData()
+      const nodes = getNodes();
+      const edges = getEdges();
 
       // console.log("formatted nodes", nodes)
       // console.log("formatted edges", edges)

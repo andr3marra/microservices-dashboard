@@ -1,32 +1,28 @@
 import { memo } from "react";
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteChangeReason } from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { getTags, pollData, changeVisibilityByTab } from "./initialNodes"
+import { useCallback, useEffect, useState } from "react";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const options = new Set<string>;
-options.add("database");
-
-
-const tags = new Set<string>;
-tags.add("database");
-tags.add("redis");
-tags.add("sqlserver");
-tags.add("database");
-
+let tags: Map<string, boolean>;
 
 const Nav = () => {
+  console.log("teste");
+  const fetchData = async () => {
+    await pollData();
+  };
+
+  fetchData();
+
   return (<>
 
-    {/* <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}> */}
-    {/* <div> */}
-
-
     <Autocomplete
-      options={Array.from(tags)}
+      options={Array.from(tags.keys())}
       style={{ width: 300 }}
       renderInput={(params) =>
         <TextField {...params} label="Visible Tags" variant="outlined" />}
@@ -49,13 +45,19 @@ const Nav = () => {
       //     {option.title}
       //   </li>
       // )}
+      onChange={(value: any | null, reason : any) => {
+        if (value == null) { return; }
+        if (reason == 'selectOption') {
+          changeVisibilityByTab(value, false);
+        } else if ('removeOption') {
+          changeVisibilityByTab(value, true);
+        }
+      }}
       style={{ width: 500 }}
       renderInput={(params) => (
         <TextField {...params} label="Checkboxes" placeholder="Favorites" />
       )}
     />
-    {/* </div> */}
-    {/* </div> */}
   </>);
 }
 

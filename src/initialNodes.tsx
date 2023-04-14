@@ -6,7 +6,6 @@ import {
 
 import { HealthStatus, ServiceState } from "./data";
 
-
 const healthyEdgeStyle =
 {
     animated: false,
@@ -40,101 +39,71 @@ function getEdgeStyle(value: HealthStatus) {
     }
 }
 let data: ServiceState[];
-// const data = [
-//     {
-//         Id: "aac6b4e4-3d11-4e35-b778-05a65e6d7d02",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "PostGreSQL",
-//         Url: null,
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "2a7052b0-f3f0-4be5-9c7b-b2be529ac1b0",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "Service Goias",
-//         Url: null,
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         Name: "Service Amazonas",
-//         Url: "www.amazonas.com/health",
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "f5599ae7-b455-4fce-92d6-628f4ed956a5",
-//         ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         Name: "Service Sao Luis",
-//         Url:null,
-//         Status: Status.Unhealthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "14461a0e-c1de-476c-b475-d2e511d1416e",
-//         ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         Name: "Service Curitiba",
-//         Url: null,
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "cdec9a40-f56b-4345-a3b1-f4a6c7451cdc",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "Service Campo Grande",
-//         Url: "www.campogrande.com/health",
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         Name: "Service Fortaleza",
-//         Url: "www.fortaleza.com/health",
-//         Status: Status.Unhealthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         ParentId: null,
-//         Name: "Gateway São Paulo",
-//         Url: "www.saopaulo.com/health",
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-
-// ] as ServiceState[];
-
-
 
 function getUsers(): Promise<ServiceState[]> {
     return fetch('https://localhost:7188/States')
-        // the JSON body is taken from the response
         .then(res => res.json())
         .then(res => {
-            // The response has an `any` type, so we need to cast
-            // it to the `User` type, and return it from the promise
             return res as ServiceState[]
         })
 }
 
+let nodes: Node[];
+let edges: Edge[];
+const tagVisibility = new Map<string, boolean>();
 
-export async function pollData() {
-    data = await getUsers()
+
+export function getNodes() : Node[]{
+    return nodes;
 }
 
-export function getData(): [Node[], Edge[]] {
+export function getEdges() : Edge[]{
+    return edges;
+}
+
+export function getTags() : Map<string, boolean>{
+    return tagVisibility;
+}
+
+export function changeVisibilityByNode(node : Node, value: boolean ){
+    node.hidden = value;
+    // TODO: hide all edges conecting to this node and all nodes conected to edges
+}
+
+export function changeVisibilityByTab(tag: string, value: boolean) {
+    if (tagVisibility.has(tag)) {
+        tagVisibility.set(tag, value);
+    }
+    [nodes, edges] = buildNodesAndEdges();
+}
+
+export function showAllItems(){
+    nodes.forEach((node) => {
+        node.hidden = false;
+    })
+    edges.forEach((edge) => {
+        edge.hidden = false;
+    })
+}
+
+export async function pollData() {
+    data = await getUsers().then((value)=> data = value);
+    buildTags();
+    [nodes, edges] = buildNodesAndEdges();
+}
+
+export function buildTags() {
+    data.forEach((serviceState: ServiceState) => {
+        serviceState.tags?.forEach((tag) => {
+            if (!tagVisibility.has(tag)) {
+                tagVisibility.set(tag, true)
+            }
+        });
+    });
+
+}
+
+export function buildNodesAndEdges(): [Node[], Edge[]] {
     const initialNodes: Node[] = [];
     const initialEdges: Edge[] = [];
 
@@ -155,6 +124,7 @@ export function getData(): [Node[], Edge[]] {
         let node = {
             id: serviceState.id,
             data: { label: serviceState.name, status: serviceState.healthStatus, tags: serviceState.tags },
+            hidden: serviceState.tags?.some(x => tagVisibility.has(x)),
             position: { x: 0, y: 0 },
             sourcePosition: Position.Right,
             targetPosition: Position.Left,
@@ -170,6 +140,7 @@ export function getData(): [Node[], Edge[]] {
         }
         let edge = {
             id: `${serviceState.parentId} - ${serviceState.id}`,
+            hidden: node.hidden,
             source: serviceState.parentId,
             target: serviceState.id,
             ...getEdgeStyle(serviceState.healthStatus)
