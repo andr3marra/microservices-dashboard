@@ -133,7 +133,7 @@ const BasicFlow = () => {
     // setEdges(edges)
   };
 
-  const onMouseLeave = (event: React.MouseEvent, node: Node)=> {
+  const onMouseLeave = (event: React.MouseEvent, node: Node) => {
     console.log("onMouseLeave");
     event.preventDefault();
     setIsOpen(false);
@@ -148,9 +148,9 @@ const BasicFlow = () => {
       onConnect={onConnect}
       nodeTypes={nodeTypes}
       // fitView = {true}  // NOT WORKING
-      onNodeContextMenu = {(event: React.MouseEvent, node: Node) => {}}
-      onNodeMouseEnter = {onMouseEnter}
-      onNodeMouseLeave = {onMouseLeave}
+      onNodeContextMenu={(event: React.MouseEvent, node: Node) => { }}
+      onNodeMouseEnter={onMouseEnter}
+      onNodeMouseLeave={onMouseLeave}
     >
       <Controls />
       <MiniMap />
@@ -167,26 +167,12 @@ const BasicFlow = () => {
       )
       }
 
-      <div style={{ position: 'absolute', left: 10, top: 10, zIndex: 4 }}>
-        <div>
-          <label htmlFor="ishidden">
-            isOpen
-            <input
-              id="ishidden"
-              type="checkbox"
-              onChange={() => {console.log("testeeee")}}
-              className="react-flow__ishidden"
-            />
-          </label>
-        </div>
-      </div>
-
     </ReactFlow>
 
-    
+
   );
 };
-    //https://reactflow.dev/docs/examples/nodes/dynamic-grouping/
+//https://reactflow.dev/docs/examples/nodes/dynamic-grouping/
 
 export default BasicFlow;
 
