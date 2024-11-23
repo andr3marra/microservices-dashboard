@@ -45,82 +45,82 @@ function getNodeStyle(value: HealthStatus) {
             return unhealtyNodeStyle;
     }
 }
-let data: ServiceState[];
-// const data = [
-//     {
-//         Id: "aac6b4e4-3d11-4e35-b778-05a65e6d7d02",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "PostGreSQL",
-//         Url: null,
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "2a7052b0-f3f0-4be5-9c7b-b2be529ac1b0",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "Service Goias",
-//         Url: null,
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         Name: "Service Amazonas",
-//         Url: "www.amazonas.com/health",
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "f5599ae7-b455-4fce-92d6-628f4ed956a5",
-//         ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         Name: "Service Sao Luis",
-//         Url:null,
-//         Status: Status.Unhealthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "14461a0e-c1de-476c-b475-d2e511d1416e",
-//         ParentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         Name: "Service Curitiba",
-//         Url: null,
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "cdec9a40-f56b-4345-a3b1-f4a6c7451cdc",
-//         ParentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
-//         Name: "Service Campo Grande",
-//         Url: "www.campogrande.com/health",
-//         Status: Status.Healthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
-//         ParentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         Name: "Service Fortaleza",
-//         Url: "www.fortaleza.com/health",
-//         Status: Status.Unhealthy,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
-//     {
-//         Id: "5d27977c-0653-492f-9923-ff4cdc527cd8",
-//         ParentId: null,
-//         Name: "Gateway São Paulo",
-//         Url: "www.saopaulo.com/health",
-//         Status: Status.Degraded,
-//         Description: "",
-//         Metadata: null
-//     } as ServiceState,
+// let data: ServiceState[];
+const data = [
+    {
+        id: "aac6b4e4-3d11-4e35-b778-05a65e6d7d02",
+        parentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        name: "PostGreSQL",
+        url: null,
+        healthStatus: HealthStatus.Degraded,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "2a7052b0-f3f0-4be5-9c7b-b2be529ac1b0",
+        parentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        name: "Service Goias",
+        url: null,
+        healthStatus: HealthStatus.Healthy,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        parentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        name: "Service Amazonas",
+        url: "www.amazonas.com/health",
+        healthStatus: HealthStatus.Degraded,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "f5599ae7-b455-4fce-92d6-628f4ed956a5",
+        parentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        name: "Service Sao Luis",
+        url:null,
+        healthStatus: HealthStatus.Unhealthy,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "14461a0e-c1de-476c-b475-d2e511d1416e",
+        parentId: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        name: "Service Curitiba",
+        url: null,
+        healthStatus: HealthStatus.Healthy,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "cdec9a40-f56b-4345-a3b1-f4a6c7451cdc",
+        parentId: "7f4a626e-6c09-402a-b380-ddcc43000a5f",
+        name: "Service Campo Grande",
+        url: "www.campogrande.com/health",
+        healthStatus: HealthStatus.Healthy,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "9168cb47-a6e5-4957-93ee-2b4927d9f7fe",
+        parentId: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        name: "Service Fortaleza",
+        url: "www.fortaleza.com/health",
+        healthStatus: HealthStatus.Unhealthy,
+        description: "",
+        tags: null
+    } as ServiceState,
+    {
+        id: "5d27977c-0653-492f-9923-ff4cdc527cd8",
+        parentId: null,
+        name: "Gateway São Paulo",
+        url: "www.saopaulo.com/health",
+        healthStatus: HealthStatus.Degraded,
+        description: "",
+        tags: null
+    } as ServiceState,
 
-// ] as ServiceState[];
+] as ServiceState[];
 
 
 
@@ -137,8 +137,8 @@ function getUsers(): Promise<ServiceState[]> {
 
 
 export async function pollData() {
-    data = await getUsers()
-    console.log(data);
+    //data = await getUsers()
+    //console.log(data);
 }
 
 export function getData(): [Node[], Edge[]] {
